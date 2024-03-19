@@ -23,7 +23,7 @@ mod ERC721MetadataUpdate {
 
     // ERC4906
     #[abi(embed_v0)]
-    impl ERC4906Impl = ERC4906Component::ERC4906Impl<ContractState>;
+    impl ERC4906Impl = ERC4906Component::ERC4906HelperImpl<ContractState>;
 
     // ERC721Mixin
     #[abi(embed_v0)]
