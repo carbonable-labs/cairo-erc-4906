@@ -25,11 +25,6 @@ mod ERC721MetadataUpdate {
     impl OwnableImpl = OwnableComponent::OwnableImpl<ContractState>;
     impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
 
-    #[abi(embed_v0)]
-    impl SRC5Impl = SRC5Component::SRC5Impl<ContractState>;
-    #[abi(embed_v0)]
-    impl SRC5CamelImpl = SRC5Component::SRC5CamelImpl<ContractState>;
-
     #[storage]
     struct Storage {
         #[substorage(v0)]
