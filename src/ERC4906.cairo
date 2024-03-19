@@ -2,14 +2,13 @@
 
 #[starknet::interface]
 trait IERC4906<TContractState> {
-    fn setTokenURI(ref self: TContractState, tokenId: u256, tokenURI: ByteArray);
+    fn setBaseTokenURI(ref self: TContractState, tokenURI: ByteArray);
     fn emitBatchMetadataUpdate(ref self: TContractState, fromTokenId: u256, toTokenId: u256);
 }
 
 #[starknet::component]
 pub mod ERC4906Component {
     use starknet::ContractAddress;
-    use super::super::constants;
     use openzeppelin::token::erc721::ERC721Component;
 
     #[storage]
@@ -25,7 +24,7 @@ pub mod ERC4906Component {
     #[derive(Drop, PartialEq, starknet::Event)]
     struct MetadataUpdate {
         #[key]
-        tokenId: u256,
+        tokenURI: ByteArray,
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
@@ -43,18 +42,21 @@ pub mod ERC4906Component {
         +Drop<TContractState>,
         impl ERC721: ERC721Component::HasComponent<TContractState>
     > of super::IERC4906<ComponentState<TContractState>> {
-        fn setTokenURI(
-            ref self: ComponentState<TContractState>, tokenId: u256, tokenURI: ByteArray
-        ) {
+        fn setBaseTokenURI(ref self: ComponentState<TContractState>, tokenURI: ByteArray) {
             let mut erc721_comp = get_dep_component_mut!(ref self, ERC721);
+            let newTokenURI = tokenURI.clone();
+
+            // Write the new base token URI
             erc721_comp.ERC721_base_uri.write(tokenURI);
 
-            self.emit(MetadataUpdate { tokenId: tokenId });
+            // Emit event after base metadata is updated
+            self.emit(MetadataUpdate { tokenURI: newTokenURI });
         }
 
         fn emitBatchMetadataUpdate(
             ref self: ComponentState<TContractState>, fromTokenId: u256, toTokenId: u256
         ) {
+            // Emit event after metadata of a batch of tokens is updated
             self.emit(BatchMetadataUpdate { fromTokenId: fromTokenId, toTokenId: toTokenId });
         }
     }
