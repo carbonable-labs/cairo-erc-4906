@@ -3,16 +3,13 @@
 #[starknet::interface]
 trait IERC4906Helper<TContractState> {
     fn setBaseTokenURI(ref self: TContractState, tokenURI: ByteArray);
-    fn emitBatchMetadataUpdate(ref self: TContractState, fromTokenId: u256, toTokenId: u256);
 }
 
 #[starknet::component]
 pub mod ERC4906Component {
-    use starknet::get_caller_address;
-    use starknet::ContractAddress;
+    use starknet::{ContractAddress, get_caller_address};
     use openzeppelin::token::erc721::ERC721Component;
     use openzeppelin::access::ownable::OwnableComponent;
-
 
     #[storage]
     struct Storage {}
@@ -39,7 +36,7 @@ pub mod ERC4906Component {
     }
 
     #[embeddable_as(ERC4906HelperImpl)]
-    impl ERC4906<
+    pub impl ERC4906Helper<
         TContractState,
         +HasComponent<TContractState>,
         +Drop<TContractState>,
@@ -48,20 +45,25 @@ pub mod ERC4906Component {
     > of super::IERC4906Helper<ComponentState<TContractState>> {
         fn setBaseTokenURI(ref self: ComponentState<TContractState>, tokenURI: ByteArray) {
             let caller = get_caller_address();
-            let mut ownable_comp = get_dep_component_mut!(ref self, Ownable);
+            let mut ownableComp = get_dep_component_mut!(ref self, Ownable);
 
-            assert(caller == ownable_comp.Ownable_owner.read(), 'not the owner');
+            assert(caller == ownableComp.Ownable_owner.read(), 'not the owner');
 
-            let mut erc721_comp = get_dep_component_mut!(ref self, ERC721);
+            let mut erc721Comp = get_dep_component_mut!(ref self, ERC721);
             let newTokenURI = tokenURI.clone();
 
             // Write the new base token URI
-            erc721_comp.ERC721_base_uri.write(tokenURI);
+            erc721Comp.ERC721_base_uri.write(tokenURI);
 
             // Emit event after base metadata is updated
             self.emit(MetadataUpdate { tokenURI: newTokenURI });
         }
+    }
 
+    #[generate_trait]
+    pub impl ERC4906HelperInternal<
+        TContractState, +HasComponent<TContractState>,
+    > of IERC4906HelperInternal<TContractState> {
         fn emitBatchMetadataUpdate(
             ref self: ComponentState<TContractState>, fromTokenId: u256, toTokenId: u256
         ) {

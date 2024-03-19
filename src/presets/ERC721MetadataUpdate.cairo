@@ -2,13 +2,11 @@
 
 #[starknet::contract]
 mod ERC721MetadataUpdate {
-    use core::array::SpanTrait;
-    use erc4906::ERC4906::ERC4906Component::HasComponent;
-    use openzeppelin::introspection::src5::SRC5Component::InternalTrait;
     use super::super::super::ERC4906::ERC4906Component;
 
     use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::introspection::src5::SRC5Component;
+    use openzeppelin::introspection::src5::SRC5Component::InternalTrait;
     use openzeppelin::token::erc721::ERC721Component;
 
     use starknet::ContractAddress;
@@ -24,6 +22,7 @@ mod ERC721MetadataUpdate {
     // ERC4906
     #[abi(embed_v0)]
     impl ERC4906Impl = ERC4906Component::ERC4906HelperImpl<ContractState>;
+    impl ERC4906InteralImpl = ERC4906Component::ERC4906HelperInternal<ContractState>;
 
     // ERC721Mixin
     #[abi(embed_v0)]
