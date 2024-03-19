@@ -3,7 +3,6 @@
 #[starknet::contract]
 mod ERC721MetadataUpdate {
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait;
-    use core::traits::PanicDestruct;
     use super::super::super::ERC4906::ERC4906Component;
     use super::super::super::constants;
 
@@ -12,12 +11,15 @@ mod ERC721MetadataUpdate {
     use openzeppelin::token::erc721::ERC721Component;
 
     use starknet::ContractAddress;
-    use starknet::get_caller_address;
 
-    component!(path: ERC721Component, storage: erc721, event: erc721Event);
     component!(path: ERC4906Component, storage: erc4906, event: erc4906Event);
+    component!(path: ERC721Component, storage: erc721, event: erc721Event);
     component!(path: OwnableComponent, storage: ownable, event: ownableEvent);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
+
+    // ERC4906
+    #[abi(embed_v0)]
+    impl ERC4906Impl = ERC4906Component::ERC4906Impl<ContractState>;
 
     // ERC721Mixin
     #[abi(embed_v0)]
@@ -29,34 +31,29 @@ mod ERC721MetadataUpdate {
     impl OwnableImpl = OwnableComponent::OwnableImpl<ContractState>;
     impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
 
-    // ERC4906
-    #[abi(embed_v0)]
-    impl ERC4906Impl = ERC4906Component::ERC4906Impl<ContractState>;
-
-
     #[storage]
     struct Storage {
         #[substorage(v0)]
-        erc721: ERC721Component::Storage,
-        #[substorage(v0)]
         erc4906: ERC4906Component::Storage,
         #[substorage(v0)]
-        src5: SRC5Component::Storage,
+        erc721: ERC721Component::Storage,
         #[substorage(v0)]
         ownable: OwnableComponent::Storage,
+        #[substorage(v0)]
+        src5: SRC5Component::Storage,
     }
 
     #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {
         #[flat]
-        erc721Event: ERC721Component::Event,
-        #[flat]
         erc4906Event: ERC4906Component::Event,
         #[flat]
-        SRC5Event: SRC5Component::Event,
+        erc721Event: ERC721Component::Event,
         #[flat]
         ownableEvent: OwnableComponent::Event,
+        #[flat]
+        SRC5Event: SRC5Component::Event,
     }
 
     #[constructor]
