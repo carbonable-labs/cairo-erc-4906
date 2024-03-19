@@ -2,15 +2,19 @@
 
 #[starknet::contract]
 mod ERC721MetadataUpdate {
+    use core::array::SpanTrait;
+    use erc4906::ERC4906::ERC4906Component::HasComponent;
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait;
     use super::super::super::ERC4906::ERC4906Component;
-    use super::super::super::constants;
 
     use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::token::erc721::ERC721Component;
 
     use starknet::ContractAddress;
+
+    // IERC4906 ID
+    pub const IERC4906_ID: felt252 = 0x49064906;
 
     component!(path: ERC4906Component, storage: erc4906, event: erc4906Event);
     component!(path: ERC721Component, storage: erc721, event: erc721Event);
@@ -83,7 +87,8 @@ mod ERC721MetadataUpdate {
             self.erc721.initializer(name, symbol, base_uri);
             self._mint_assets(recipient, token_ids);
             self.ownable._transfer_ownership(owner);
-            self.src5.register_interface(constants::IERC4906_ID);
+            self.src5.register_interface(IERC4906_ID);
+            self.erc4906.emitBatchMetadataUpdate(*token_ids.at(0), *token_ids.at(token_ids.len()));
         }
     }
 
