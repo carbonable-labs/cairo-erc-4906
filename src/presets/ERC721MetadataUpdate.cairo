@@ -60,9 +60,24 @@ mod ERC721MetadataUpdate {
         token_ids: Span<u256>,
         owner: ContractAddress
     ) {
-        self.erc721.initializer(name, symbol, base_uri);
-        self._mint_assets(recipient, token_ids);
-        self.ownable._transfer_ownership(owner);
+        self._initialize(name, symbol, base_uri, recipient, token_ids, owner);
+    }
+
+    #[generate_trait]
+    impl InitializerImpl of InitializerTrait {
+        fn _initialize(
+            ref self: ContractState,
+            name: ByteArray,
+            symbol: ByteArray,
+            base_uri: ByteArray,
+            recipient: ContractAddress,
+            token_ids: Span<u256>,
+            owner: ContractAddress
+        ) {
+            self.erc721.initializer(name, symbol, base_uri);
+            self._mint_assets(recipient, token_ids);
+            self.ownable._transfer_ownership(owner);
+        }
     }
 
     #[generate_trait]
