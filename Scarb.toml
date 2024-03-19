@@ -12,6 +12,5 @@ starknet = "2.6.3"
 openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.10.0" }
 
 [[target.starknet-contract]]
-allowed-libfuncs-list.name = "experimental"
 sierra = true
 casm = false
