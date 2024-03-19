@@ -2,7 +2,7 @@
 
 #[starknet::interface]
 trait IERC4906<TContractState> {
-    fn setTokenURI(ref self: TContractState, tokenId: u256, tokenURI: felt252);
+    fn setTokenURI(ref self: TContractState, tokenId: u256, tokenURI: ByteArray);
     fn emitBatchMetadataUpdate(ref self: TContractState, fromTokenId: u256, toTokenId: u256);
 }
 
@@ -10,6 +10,7 @@ trait IERC4906<TContractState> {
 pub mod ERC4906Component {
     use starknet::ContractAddress;
     use super::super::constants;
+    use openzeppelin::token::erc721::ERC721Component;
 
     #[storage]
     struct Storage {}
@@ -37,40 +38,25 @@ pub mod ERC4906Component {
 
     #[embeddable_as(ERC4906Impl)]
     impl ERC4906<
-        TContractState, +HasComponent<TContractState>
+        TContractState,
+        +HasComponent<TContractState>,
+        +Drop<TContractState>,
+        impl ERC721: ERC721Component::HasComponent<TContractState>
     > of super::IERC4906<ComponentState<TContractState>> {
         fn setTokenURI(
-            ref self: ComponentState<TContractState>, tokenId: u256, tokenURI: felt252
-        ) {}
+            ref self: ComponentState<TContractState>, tokenId: u256, tokenURI: ByteArray
+        ) {
+            let mut erc721_comp = get_dep_component_mut!(ref self, ERC721);
+            erc721_comp.ERC721_base_uri.write(tokenURI);
+
+            self.emit(MetadataUpdate { tokenId: tokenId });
+        }
+
         fn emitBatchMetadataUpdate(
             ref self: ComponentState<TContractState>, fromTokenId: u256, toTokenId: u256
-        ) {}
+        ) {
+            self.emit(BatchMetadataUpdate { fromTokenId: fromTokenId, toTokenId: toTokenId });
+        }
     }
 }
-//     fn initializer(ref self: ComponentState<TContractState>) {
-//         ERC165.register_interface(constants::IERC4906_ID);
-//     }
-
-//     fn metadata_update(ref self: ComponentState<TContractState>, token_id: u256) {
-//         // @dev It fails token_id is not a valid Uint256.
-//         self.emit(MetadataUpdate { tokenId: token_id });
-//     }
-
-//     fn batch_metadata_update(
-//         ref self: ComponentState<TContractState>, from_token_id: u256, to_token_id: u256
-//     ) {
-//         self.emit(BatchMetadataUpdate { fromTokenId: from_token_id, toTokenId: to_token_id });
-//     }
-
-//     // @notice Set token uri.
-//     // @param token_id The token id for which the uri must be updated.
-//     // @param token_uri The new token uri.
-//     fn _set_token_uri(
-//         ref self: ComponentState<TContractState>, token_id: u256, token_uri: felt252
-//     ) {
-//         ERC721._set_token_uri(token_id, token_uri);
-//         metadata_update(token_id);
-//     }
-// }
-
 
