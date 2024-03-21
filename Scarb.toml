@@ -11,6 +11,8 @@ cairo-version = "2.6.3"
 starknet = "2.6.3"
 openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.10.0" }
 
+[lib]
+
 [[target.starknet-contract]]
 sierra = true
 casm = false
