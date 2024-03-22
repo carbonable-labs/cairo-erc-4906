@@ -2,7 +2,7 @@
 
 #[starknet::interface]
 trait IERC4906Helper<TContractState> {
-    fn setBaseTokenURI(ref self: TContractState, tokenURI: ByteArray);
+    fn set_base_token_uri(ref self: TContractState, token_uri: ByteArray);
 }
 
 #[starknet::component]
@@ -24,15 +24,15 @@ pub mod ERC4906Component {
     #[derive(Drop, PartialEq, starknet::Event)]
     struct MetadataUpdate {
         #[key]
-        tokenURI: ByteArray,
+        token_uri: ByteArray,
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
     struct BatchMetadataUpdate {
         #[key]
-        fromTokenId: u256,
+        from_token_id: u256,
         #[key]
-        toTokenId: u256,
+        to_token_id: u256,
     }
 
     #[embeddable_as(ERC4906HelperImpl)]
@@ -43,20 +43,20 @@ pub mod ERC4906Component {
         impl ERC721: ERC721Component::HasComponent<TContractState>,
         impl Ownable: OwnableComponent::HasComponent<TContractState>,
     > of super::IERC4906Helper<ComponentState<TContractState>> {
-        fn setBaseTokenURI(ref self: ComponentState<TContractState>, tokenURI: ByteArray) {
+        fn set_base_token_uri(ref self: ComponentState<TContractState>, token_uri: ByteArray) {
             let caller = get_caller_address();
-            let mut ownableComp = get_dep_component_mut!(ref self, Ownable);
+            let mut ownable = get_dep_component!(@self, Ownable);
 
-            assert(caller == ownableComp.Ownable_owner.read(), 'not the owner');
+            assert(caller == ownable.Ownable_owner.read(), 'not the owner');
 
             let mut erc721Comp = get_dep_component_mut!(ref self, ERC721);
-            let newTokenURI = tokenURI.clone();
+            let new_token_uri = token_uri.clone();
 
             // Write the new base token URI
-            erc721Comp.ERC721_base_uri.write(tokenURI);
+            erc721Comp.ERC721_base_uri.write(token_uri);
 
             // Emit event after base metadata is updated
-            self.emit(MetadataUpdate { tokenURI: newTokenURI });
+            self.emit(MetadataUpdate { token_uri: new_token_uri });
         }
     }
 
@@ -68,7 +68,7 @@ pub mod ERC4906Component {
             ref self: ComponentState<TContractState>, fromTokenId: u256, toTokenId: u256
         ) {
             // Emit event after metadata of a batch of tokens is updated
-            self.emit(BatchMetadataUpdate { fromTokenId: fromTokenId, toTokenId: toTokenId });
+            self.emit(BatchMetadataUpdate { from_token_id: fromTokenId, to_token_id: toTokenId });
         }
     }
 }
