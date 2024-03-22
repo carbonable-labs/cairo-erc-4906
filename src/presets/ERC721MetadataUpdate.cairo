@@ -3,12 +3,10 @@
 #[starknet::contract]
 mod ERC721MetadataUpdate {
     use super::super::super::ERC4906::ERC4906Component;
-
     use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait;
     use openzeppelin::token::erc721::ERC721Component;
-
     use starknet::ContractAddress;
 
     // IERC4906 ID
@@ -87,7 +85,6 @@ mod ERC721MetadataUpdate {
             self._mint_assets(recipient, token_ids);
             self.ownable._transfer_ownership(owner);
             self.src5.register_interface(IERC4906_ID);
-            self.erc4906.emitBatchMetadataUpdate(*token_ids.at(0), *token_ids.at(token_ids.len()));
         }
     }
 
@@ -97,14 +94,10 @@ mod ERC721MetadataUpdate {
         fn _mint_assets(
             ref self: ContractState, recipient: ContractAddress, mut token_ids: Span<u256>
         ) {
-            loop {
-                if token_ids.len() == 0 {
-                    break;
-                }
-                let id = *token_ids.pop_front().unwrap();
-
-                self.erc721._mint(recipient, id);
-            }
+            while let Option::Some(token_id) = token_ids
+                .pop_front() {
+                    self.erc721._mint(recipient, *token_id);
+                };
         }
     }
 }
