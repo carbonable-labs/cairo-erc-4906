@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 #[starknet::interface]
-trait IERC4906Helper<TContractState> {
+pub trait IERC4906Helper<TContractState> { // TODO: remove pub keyword
     fn set_base_token_uri(ref self: TContractState, token_uri: ByteArray);
 }
 
@@ -22,9 +22,9 @@ pub mod ERC4906Component {
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
-    struct MetadataUpdate {
+    pub struct MetadataUpdate { // TODO: remove pub keyword
         #[key]
-        token_uri: ByteArray,
+        pub token_uri: ByteArray, // Same here
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
