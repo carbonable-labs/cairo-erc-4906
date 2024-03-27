@@ -25,13 +25,13 @@ pub mod ERC4906Component {
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
-    pub(crate) struct MetadataUpdate {
+    pub struct MetadataUpdate {
         #[key]
         pub token_uri: ByteArray,
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
-    pub(crate) struct BatchMetadataUpdate {
+    pub struct BatchMetadataUpdate {
         #[key]
         pub from_token_id: u256,
         #[key]
