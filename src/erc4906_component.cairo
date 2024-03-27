@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 #[starknet::interface]
-trait IERC4906Helper<TContractState> {
+pub trait IERC4906Helper<TContractState> {
     fn set_base_token_uri(ref self: TContractState, token_uri: ByteArray);
 }
 
@@ -25,13 +25,13 @@ pub mod ERC4906Component {
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
-    struct MetadataUpdate {
+    pub(crate) struct MetadataUpdate {
         #[key]
         token_uri: ByteArray,
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
-    struct BatchMetadataUpdate {
+    pub(crate) struct BatchMetadataUpdate {
         #[key]
         from_token_id: u256,
         #[key]
