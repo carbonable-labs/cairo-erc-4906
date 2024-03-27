@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 
 #[starknet::contract]
-mod ERC721MetadataUpdate {
-    use super::super::super::ERC4906::ERC4906Component;
+pub mod ERC4906Preset {
+    use openzeppelin::access::ownable::ownable::OwnableComponent::InternalTrait;
+    use erc4906::erc4906_component::ERC4906Component;
     use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::introspection::src5::SRC5Component;
-    use openzeppelin::introspection::src5::SRC5Component::InternalTrait;
+    use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SCR5InternalTrait;
     use openzeppelin::token::erc721::ERC721Component;
     use starknet::ContractAddress;
 
@@ -71,7 +72,7 @@ mod ERC721MetadataUpdate {
     }
 
     #[generate_trait]
-    impl InitializerImpl of InitializerTrait {
+    pub impl InitializerImpl of InitializerTrait {
         fn _initialize(
             ref self: ContractState,
             name: ByteArray,
@@ -82,14 +83,15 @@ mod ERC721MetadataUpdate {
             owner: ContractAddress
         ) {
             self.erc721.initializer(name, symbol, base_uri);
-            self._mint_assets(recipient, token_ids);
-            self.ownable._transfer_ownership(owner);
+            self.ownable.initializer(owner);
             self.src5.register_interface(IERC4906_ID);
+
+            self._mint_assets(recipient, token_ids);
         }
     }
 
     #[generate_trait]
-    impl IntImpl of IntTrait {
+    pub impl IntImpl of IntTrait {
         /// Mints `token_ids` to `recipient`.
         fn _mint_assets(
             ref self: ContractState, recipient: ContractAddress, mut token_ids: Span<u256>

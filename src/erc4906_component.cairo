@@ -1,15 +1,18 @@
 // SPDX-License-Identifier: MIT
 
 #[starknet::interface]
-pub trait IERC4906Helper<TContractState> { // TODO: remove pub keyword
+pub trait IERC4906Helper<TContractState> {
     fn set_base_token_uri(ref self: TContractState, token_uri: ByteArray);
 }
 
 #[starknet::component]
 pub mod ERC4906Component {
     use starknet::{ContractAddress, get_caller_address};
-    use openzeppelin::token::erc721::ERC721Component;
     use openzeppelin::access::ownable::OwnableComponent;
+    use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
+    use openzeppelin::introspection::src5::SRC5Component::SRC5;
+    use openzeppelin::introspection::src5::SRC5Component;
+    use openzeppelin::token::erc721::ERC721Component;
 
     #[storage]
     struct Storage {}
@@ -22,23 +25,24 @@ pub mod ERC4906Component {
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
-    pub struct MetadataUpdate { // TODO: remove pub keyword
+    pub struct MetadataUpdate {
         #[key]
-        pub token_uri: ByteArray, // Same here
+        pub token_id: u256,
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
-    struct BatchMetadataUpdate {
+    pub struct BatchMetadataUpdate {
         #[key]
-        from_token_id: u256,
+        pub from_token_id: u256,
         #[key]
-        to_token_id: u256,
+        pub to_token_id: u256,
     }
 
     #[embeddable_as(ERC4906HelperImpl)]
     pub impl ERC4906Helper<
         TContractState,
         +HasComponent<TContractState>,
+        +SRC5Component::HasComponent<TContractState>,
         +Drop<TContractState>,
         impl ERC721: ERC721Component::HasComponent<TContractState>,
         impl Ownable: OwnableComponent::HasComponent<TContractState>,
@@ -49,14 +53,19 @@ pub mod ERC4906Component {
 
             assert(caller == ownable.Ownable_owner.read(), 'not the owner');
 
-            let mut erc721Comp = get_dep_component_mut!(ref self, ERC721);
-            let new_token_uri = token_uri.clone();
+            let mut erc721_comp = get_dep_component_mut!(ref self, ERC721);
 
             // Write the new base token URI
-            erc721Comp.ERC721_base_uri.write(token_uri);
+            erc721_comp.ERC721_base_uri.write(token_uri);
+
+            // Not possible to use BoundedInt because of visibility issue with edition 2023_11
+            let u256_max = u256 {
+                low: 0xffffffffffffffffffffffffffffffff_u128,
+                high: 0xffffffffffffffffffffffffffffffff_u128
+            };
 
             // Emit event after base metadata is updated
-            self.emit(MetadataUpdate { token_uri: new_token_uri });
+            self.emit(BatchMetadataUpdate { from_token_id: 0, to_token_id: u256_max });
         }
     }
 
@@ -64,7 +73,12 @@ pub mod ERC4906Component {
     pub impl ERC4906HelperInternal<
         TContractState, +HasComponent<TContractState>,
     > of IERC4906HelperInternal<TContractState> {
-        fn emitBatchMetadataUpdate(
+        fn _emit_metadata_update(ref self: ComponentState<TContractState>, token_id: u256) {
+            // Emit event after metadata of a token is updated
+            self.emit(MetadataUpdate { token_id: token_id });
+        }
+
+        fn _emit_batch_metadata_update(
             ref self: ComponentState<TContractState>, fromTokenId: u256, toTokenId: u256
         ) {
             // Emit event after metadata of a batch of tokens is updated
