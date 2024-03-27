@@ -11,7 +11,6 @@ cairo-version = "2.6.3"
 [dependencies]
 starknet = ">=2.6.3"
 openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.10.0" }
-snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry.git", tag = "v0.19.0" }
 
 [scripts]
 test = "snforge test"

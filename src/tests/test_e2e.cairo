@@ -1,18 +1,24 @@
 // Contracts
 
-use erc4906::ERC4906::ERC4906Component;
-use erc4906::ERC4906::ERC4906Component::{Event, MetadataUpdate};
+use erc4906::erc4906_component::ERC4906Component;
+use erc4906::erc4906_component::ERC4906Component::{Event, MetadataUpdate};
 
 // Components
 
-use erc4906::ERC4906::{IERC4906Helper, IERC4906HelperDispatcher, IERC4906HelperDispatcherTrait};
-use openzeppelin::token::erc721::interface::{IERC721MetadataDispatcher, IERC721MetadataDispatcherTrait, IERC721Metadata};
+use erc4906::erc4906_component::{
+    IERC4906Helper, IERC4906HelperDispatcher, IERC4906HelperDispatcherTrait
+};
+use openzeppelin::token::erc721::interface::{
+    IERC721MetadataDispatcher, IERC721MetadataDispatcherTrait, IERC721Metadata
+};
 
 // External deps
 
 use openzeppelin::utils::serde::SerializedAppend;
 use snforge_std as snf;
-use snforge_std::{CheatTarget, ContractClassTrait, EventSpy, SpyOn, cheatcodes::events::EventAssertions};
+use snforge_std::{
+    CheatTarget, ContractClassTrait, EventSpy, SpyOn, cheatcodes::events::EventAssertions
+};
 
 // Starknet deps
 
@@ -66,7 +72,9 @@ fn test_set_token_uri() {
     let erc721_meta = IERC721MetadataDispatcher { contract_address };
     let erc4906 = IERC4906HelperDispatcher { contract_address };
 
-    assert(erc721_meta.token_uri(TOKEN_1) == "https://api.example.com/v1/1", 'Wrong init token uri');
+    assert(
+        erc721_meta.token_uri(TOKEN_1) == "https://api.example.com/v1/1", 'Wrong init token uri'
+    );
 
     snf::start_prank(CheatTarget::One(contract_address), OWNER());
     erc4906.set_base_token_uri(OTHER_BASE_URI());
@@ -74,10 +82,5 @@ fn test_set_token_uri() {
     assert(erc721_meta.token_uri(TOKEN_1) == "https://api.example.com/v2/1", 'Wrong token uri');
 
     let expected_metadata_update = MetadataUpdate { token_uri: OTHER_BASE_URI() };
-    spy.
-        assert_emitted(
-            @array![
-                (contract_address, Event::MetadataUpdate(expected_metadata_update))
-            ]
-        )
+    spy.assert_emitted(@array![(contract_address, Event::MetadataUpdate(expected_metadata_update))])
 }
