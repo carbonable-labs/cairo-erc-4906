@@ -27,7 +27,7 @@ pub mod ERC4906Component {
     #[derive(Drop, PartialEq, starknet::Event)]
     pub struct MetadataUpdate {
         #[key]
-        pub _tokenId: u256,
+        pub token_id: u256,
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
@@ -73,6 +73,11 @@ pub mod ERC4906Component {
     pub impl ERC4906HelperInternal<
         TContractState, +HasComponent<TContractState>,
     > of IERC4906HelperInternal<TContractState> {
+        fn _emit_metadata_update(ref self: ComponentState<TContractState>, token_id: u256) {
+            // Emit event after metadata of a token is updated
+            self.emit(MetadataUpdate { token_id: token_id });
+        }
+
         fn _emit_batch_metadata_update(
             ref self: ComponentState<TContractState>, fromTokenId: u256, toTokenId: u256
         ) {
