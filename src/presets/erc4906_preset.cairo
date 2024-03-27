@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 #[starknet::contract]
-mod ERC721MetadataUpdate {
+pub mod ERC721MetadataUpdate {
     use openzeppelin::access::ownable::ownable::OwnableComponent::InternalTrait;
     use erc4906::erc4906_component::ERC4906Component;
     use openzeppelin::access::ownable::OwnableComponent;
@@ -72,7 +72,7 @@ mod ERC721MetadataUpdate {
     }
 
     #[generate_trait]
-    impl InitializerImpl of InitializerTrait {
+    pub impl InitializerImpl of InitializerTrait {
         fn _initialize(
             ref self: ContractState,
             name: ByteArray,
@@ -91,7 +91,7 @@ mod ERC721MetadataUpdate {
     }
 
     #[generate_trait]
-    impl IntImpl of IntTrait {
+    pub impl IntImpl of IntTrait {
         /// Mints `token_ids` to `recipient`.
         fn _mint_assets(
             ref self: ContractState, recipient: ContractAddress, mut token_ids: Span<u256>

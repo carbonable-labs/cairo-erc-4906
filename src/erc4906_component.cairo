@@ -39,7 +39,7 @@ pub mod ERC4906Component {
     }
 
     #[embeddable_as(ERC4906HelperImpl)]
-    impl ERC4906Helper<
+    pub impl ERC4906Helper<
         TContractState,
         +HasComponent<TContractState>,
         +SRC5Component::HasComponent<TContractState>,
