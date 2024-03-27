@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 #[starknet::contract]
-pub mod ERC721MetadataUpdate {
+pub mod ERC4906Preset {
     use openzeppelin::access::ownable::ownable::OwnableComponent::InternalTrait;
     use erc4906::erc4906_component::ERC4906Component;
     use openzeppelin::access::ownable::OwnableComponent;

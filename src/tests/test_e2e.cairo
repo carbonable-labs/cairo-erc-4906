@@ -47,9 +47,9 @@ fn OWNER() -> ContractAddress {
 const TOKEN_1: u256 = 1;
 const TOKEN_10: u256 = 10;
 
-// Deploys an ERC721MetadaUpdate contract.
-fn deploy() -> (ContractAddress, EventSpy) {
-    let contract = snf::declare("ERC721MetadataUpdate");
+// Deploys an ERC4906 Preset contract.
+fn deploy() -> ContractAddress {
+    let contract = snf::declare("ERC4906Preset");
 
     let token_ids = array![TOKEN_1, TOKEN_10];
     let mut calldata: Array<felt252> = array![];
@@ -61,16 +61,17 @@ fn deploy() -> (ContractAddress, EventSpy) {
     calldata.append_serde(OWNER());
 
     let contract_address = contract.deploy(@calldata).unwrap();
-    let mut spy = snf::spy_events(SpyOn::One(contract_address));
 
-    (contract_address, spy)
+    contract_address
 }
 
 #[test]
 fn test_set_token_uri() {
-    let (contract_address, mut spy) = deploy();
+    let contract_address = deploy();
     let erc721_meta = IERC721MetadataDispatcher { contract_address };
     let erc4906 = IERC4906HelperDispatcher { contract_address };
+
+    let mut spy = snf::spy_events(SpyOn::One(contract_address));
 
     assert(
         erc721_meta.token_uri(TOKEN_1) == "https://api.example.com/v1/1", 'Wrong init token uri'
