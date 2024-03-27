@@ -27,7 +27,7 @@ pub mod ERC4906Component {
     #[derive(Drop, PartialEq, starknet::Event)]
     pub struct MetadataUpdate {
         #[key]
-        pub token_uri: ByteArray,
+        pub _tokenId: u256,
     }
 
     #[derive(Drop, PartialEq, starknet::Event)]
@@ -54,13 +54,18 @@ pub mod ERC4906Component {
             assert(caller == ownable.Ownable_owner.read(), 'not the owner');
 
             let mut erc721_comp = get_dep_component_mut!(ref self, ERC721);
-            let new_token_uri = token_uri.clone();
 
             // Write the new base token URI
             erc721_comp.ERC721_base_uri.write(token_uri);
 
+            // Not possible to use BoundedInt because of visibility issue with edition 2023_11
+            let u256_max = u256 {
+                low: 0xffffffffffffffffffffffffffffffff_u128,
+                high: 0xffffffffffffffffffffffffffffffff_u128
+            };
+
             // Emit event after base metadata is updated
-            self.emit(MetadataUpdate { token_uri: new_token_uri });
+            self.emit(BatchMetadataUpdate { from_token_id: 0, to_token_id: u256_max });
         }
     }
 
