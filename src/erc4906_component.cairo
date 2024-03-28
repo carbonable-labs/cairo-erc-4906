@@ -58,11 +58,7 @@ pub mod ERC4906Component {
             // Write the new base token URI
             erc721_comp.ERC721_base_uri.write(token_uri);
 
-            // Not possible to use BoundedInt because of visibility issue with edition 2023_11
-            let u256_max = u256 {
-                low: 0xffffffffffffffffffffffffffffffff_u128,
-                high: 0xffffffffffffffffffffffffffffffff_u128
-            };
+            let u256_max = core::integer::BoundedInt::max();
 
             // Emit event after base metadata is updated
             self.emit(BatchMetadataUpdate { from_token_id: 0, to_token_id: u256_max });
