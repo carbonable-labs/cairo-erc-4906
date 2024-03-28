@@ -1,1 +1,5 @@
+# Starknet
 target
+
+# Starknet foundry
+.snfoundry_cache
