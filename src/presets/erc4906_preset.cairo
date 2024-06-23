@@ -96,10 +96,23 @@ pub mod ERC4906Preset {
         fn _mint_assets(
             ref self: ContractState, recipient: ContractAddress, mut token_ids: Span<u256>
         ) {
-            while let Option::Some(token_id) = token_ids
-                .pop_front() {
-                    self.erc721._mint(recipient, *token_id);
-                };
+            //            while let Option::Some(token_id) = token_ids
+            //                .pop_front() {
+            //                    self.erc721._mint(recipient, *token_id);
+            //                };
+
+            // cairo 2.5.4 compatible implementation
+            let length = token_ids.len();
+
+            let mut i = 0;
+            loop {
+                if i >= length {
+                    break;
+                }
+
+                self.erc721._mint(recipient, *token_ids.at(i));
+                i += 1;
+            };
         }
     }
 }
