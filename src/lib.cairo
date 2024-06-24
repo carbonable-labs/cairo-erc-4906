@@ -1,4 +1,4 @@
-mod erc4906_component;
+pub mod erc4906_component;
 mod presets;
 
 #[cfg(test)]
