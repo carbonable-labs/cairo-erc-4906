@@ -16,7 +16,7 @@ openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", ta
 test = "snforge test"
 
 [dev-dependencies]
-snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.20.1" }
+snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.18.0" }
 
 [[target.starknet-contract]]
 sierra = true
