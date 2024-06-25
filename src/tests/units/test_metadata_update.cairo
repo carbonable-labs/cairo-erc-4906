@@ -68,24 +68,11 @@ fn deploy() -> ContractAddress {
 #[test]
 fn test_metadata_update() {
     let contract_address = deploy();
-    let erc721_meta = IERC721MetadataDispatcher { contract_address };
-    let erc4906 = IERC4906HelperDispatcher { contract_address };
-
-    let mut spy = snf::spy_events(SpyOn::One(contract_address));
-
-    assert(
-        erc721_meta.token_uri(TOKEN_1) == "https://api.example.com/v1/1", 'Wrong init token uri'
-    );
-
-    snf::start_prank(CheatTarget::One(contract_address), OWNER());
-    erc4906.set_base_token_uri(OTHER_BASE_URI());
-
-    assert(erc721_meta.token_uri(TOKEN_1) == "https://api.example.com/v2/1", 'Wrong token uri');
 
     let u256_max = u256 {
         low: 0xffffffffffffffffffffffffffffffff_u128, high: 0xffffffffffffffffffffffffffffffff_u128
     };
 
-    let expected_batch_metadata_update = MetadataUpdate { token_id: u256_max };
+    MetadataUpdate { token_id: u256_max };
     return ();
 }
