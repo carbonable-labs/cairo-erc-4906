@@ -49,7 +49,7 @@ const TOKEN_10: u256 = 10;
 
 // Deploys an ERC4906 Preset contract.
 fn deploy() -> ContractAddress {
-    let contract = snf::declare("ERC4906Preset");
+    let contract = snf::declare('ERC4906Preset');
 
     let token_ids = array![TOKEN_1, TOKEN_10];
     let mut calldata: Array<felt252> = array![];
