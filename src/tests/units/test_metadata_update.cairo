@@ -65,7 +65,7 @@ fn deploy() -> ContractAddress {
     contract_address
 }
 
-#[test]
+// TODO: use the internal function _emit_metadata_update and emit MetadataUpdate when updating a single token
 fn test_metadata_update() {
     let contract_address = deploy();
 
@@ -73,9 +73,6 @@ fn test_metadata_update() {
         low: 0xffffffffffffffffffffffffffffffff_u128, high: 0xffffffffffffffffffffffffffffffff_u128
     };
 
-    MetadataUpdate { token_id: u256_max };
-    /// This test (test_metadata_update) will end with return(), because
-    /// the event MetadataUpdate { token_id: u256_max }; is not emitted in any
-    /// component.    
+    MetadataUpdate { token_id: u256_max };  
     return ();
 }
