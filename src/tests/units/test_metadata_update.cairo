@@ -73,6 +73,6 @@ fn test_metadata_update() {
         low: 0xffffffffffffffffffffffffffffffff_u128, high: 0xffffffffffffffffffffffffffffffff_u128
     };
 
-    MetadataUpdate { token_id: u256_max };  
+    MetadataUpdate { token_id: u256_max };
     return ();
 }
