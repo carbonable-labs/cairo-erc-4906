@@ -74,5 +74,8 @@ fn test_metadata_update() {
     };
 
     MetadataUpdate { token_id: u256_max };
+    /// This test (test_metadata_update) will end with return(), because
+    /// the event MetadataUpdate { token_id: u256_max }; is not emitted in any
+    /// component.    
     return ();
 }
