@@ -82,9 +82,7 @@ fn test_set_token_uri() {
 
     assert(erc721_meta.token_uri(TOKEN_1) == "https://api.example.com/v2/1", 'Wrong token uri');
 
-    let u256_max = u256 {
-        low: 0xffffffffffffffffffffffffffffffff_u128, high: 0xffffffffffffffffffffffffffffffff_u128
-    };
+    let u256_max = ~0_u256;
 
     let expected_batch_metadata_update = BatchMetadataUpdate {
         from_token_id: 0, to_token_id: u256_max
