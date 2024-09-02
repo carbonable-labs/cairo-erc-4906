@@ -7,6 +7,8 @@ pub trait IERC4906Helper<TContractState> {
 
 #[starknet::component]
 pub mod ERC4906Component {
+    use openzeppelin::token::erc721::erc721::ERC721Component::InternalTrait;
+    use openzeppelin::access::ownable::interface::IOwnable;
     use starknet::{ContractAddress, get_caller_address};
     use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
@@ -51,12 +53,12 @@ pub mod ERC4906Component {
             let caller = get_caller_address();
             let mut ownable = get_dep_component!(@self, Ownable);
 
-            assert(caller == ownable.Ownable_owner.read(), 'not the owner');
+            assert(caller == ownable.owner(), 'ERC4906: must be owner');
 
             let mut erc721_comp = get_dep_component_mut!(ref self, ERC721);
 
             // Write the new base token URI
-            erc721_comp.ERC721_base_uri.write(token_uri);
+            erc721_comp._set_base_uri(token_uri);
 
             let u256_max = core::integer::BoundedInt::max();
 
