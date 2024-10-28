@@ -1,28 +1,14 @@
-// Contracts
-
-use erc4906::erc4906_component::ERC4906Component;
-use erc4906::erc4906_component::ERC4906Component::{Event, MetadataUpdate, BatchMetadataUpdate};
-
-// Components
-
-use erc4906::erc4906_component::{
-    IERC4906Helper, IERC4906HelperDispatcher, IERC4906HelperDispatcherTrait
-};
+use erc4906::erc4906_component::{IERC4906HelperDispatcher, IERC4906HelperDispatcherTrait};
 use openzeppelin::token::erc721::interface::{
-    IERC721MetadataDispatcher, IERC721MetadataDispatcherTrait, IERC721Metadata
+    IERC721MetadataDispatcher, IERC721MetadataDispatcherTrait
 };
 
 use super::super::utils::{deploy, OWNER, OTHER_BASE_URI, TOKEN_1};
 
 // External deps
 
-use openzeppelin::utils::serde::SerializedAppend;
 use snforge_std as snf;
-use snforge_std::{ContractClassTrait};
 
-// Starknet deps
-
-use starknet::{ContractAddress, contract_address_const};
 
 #[test]
 fn test_initialization() {
