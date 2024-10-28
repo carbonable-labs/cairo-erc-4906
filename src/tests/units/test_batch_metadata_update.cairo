@@ -1,11 +1,7 @@
 use snforge_std::cheatcodes::events::EventSpyAssertionsTrait;
-// Contracts
-
-use erc4906::erc4906_component::ERC4906Component;
-
-// Components
-
-use erc4906::erc4906_component::{IERC4906HelperDispatcher, IERC4906HelperDispatcherTrait};
+use erc4906::erc4906_component::{
+    ERC4906Component, IERC4906HelperDispatcher, IERC4906HelperDispatcherTrait
+};
 use super::super::utils::{deploy, OWNER, OTHER_BASE_URI};
 
 // External deps
@@ -14,7 +10,6 @@ use snforge_std as snf;
 use snforge_std::spy_events;
 
 // Starknet deps
-
 
 #[test]
 fn test_batch_metadata_update() {
