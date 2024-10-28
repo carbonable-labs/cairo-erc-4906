@@ -9,10 +9,8 @@ pub trait IERC4906Helper<TContractState> {
 pub mod ERC4906Component {
     use openzeppelin::token::erc721::erc721::ERC721Component::InternalTrait;
     use openzeppelin::access::ownable::interface::IOwnable;
-    use starknet::{ContractAddress, get_caller_address};
+    use starknet::get_caller_address;
     use openzeppelin::access::ownable::OwnableComponent;
-    use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SRC5InternalTrait;
-    use openzeppelin::introspection::src5::SRC5Component::SRC5;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::token::erc721::ERC721Component;
 
