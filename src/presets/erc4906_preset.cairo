@@ -1,27 +1,31 @@
 // SPDX-License-Identifier: MIT
 
+use starknet::ContractAddress;
+
+#[starknet::interface]
+pub trait IPresetExternal<TContractState> {
+    fn mint_token(ref self: TContractState, recipient: ContractAddress) -> u256;
+    fn set_base_uri(ref self: TContractState, base_uri: ByteArray);
+    fn set_token_uri(ref self: TContractState, uri: ByteArray, token_id: u256);
+}
+
 #[starknet::contract]
 pub mod ERC4906Preset {
-    use openzeppelin::access::ownable::ownable::OwnableComponent::InternalTrait;
-    use erc4906::erc4906_component::ERC4906Component;
-    use openzeppelin::access::ownable::OwnableComponent;
-    use openzeppelin::introspection::src5::SRC5Component;
-    use openzeppelin::introspection::src5::SRC5Component::InternalTrait as SCR5InternalTrait;
-    use openzeppelin::token::erc721::ERC721Component;
     use starknet::ContractAddress;
+    use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
 
-    // IERC4906 ID
-    pub const IERC4906_ID: felt252 = 0x49064906;
+    //use openzeppelin_access::ownable::ownable::OwnableComponent::InternalTrait;
+    use openzeppelin_access::ownable::OwnableComponent;
+    use openzeppelin_introspection::src5::SRC5Component;
+    use openzeppelin_token::erc721::{ERC721Component, ERC721HooksEmptyImpl};
+
+    use erc4906::erc4906_component::ERC4906Component;
+
 
     component!(path: ERC4906Component, storage: erc4906, event: erc4906Event);
     component!(path: ERC721Component, storage: erc721, event: erc721Event);
     component!(path: OwnableComponent, storage: ownable, event: ownableEvent);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
-
-    // ERC4906
-    #[abi(embed_v0)]
-    impl ERC4906Impl = ERC4906Component::ERC4906HelperImpl<ContractState>;
-    impl ERC4906InteralImpl = ERC4906Component::ERC4906HelperInternal<ContractState>;
 
     // ERC721Mixin
     #[abi(embed_v0)]
@@ -33,8 +37,11 @@ pub mod ERC4906Preset {
     impl OwnableImpl = OwnableComponent::OwnableImpl<ContractState>;
     impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
 
+    // ERC4906
+    impl ERC4906InternalImpl = ERC4906Component::InternalImpl<ContractState>;
+
     #[storage]
-    struct Storage {
+    pub struct Storage {
         #[substorage(v0)]
         erc4906: ERC4906Component::Storage,
         #[substorage(v0)]
@@ -43,6 +50,7 @@ pub mod ERC4906Preset {
         ownable: OwnableComponent::Storage,
         #[substorage(v0)]
         src5: SRC5Component::Storage,
+        pub next_token_id: u256,
     }
 
     #[event]
@@ -64,49 +72,35 @@ pub mod ERC4906Preset {
         name: ByteArray,
         symbol: ByteArray,
         base_uri: ByteArray,
-        recipient: ContractAddress,
-        token_ids: Span<u256>,
         owner: ContractAddress
     ) {
-        self._initialize(name, symbol, base_uri, recipient, token_ids, owner);
+        self.erc721.initializer(name, symbol, base_uri);
+        self.ownable.initializer(owner);
+        self.erc4906.initializer();
+        self.erc721.mint(owner, 1);
+        self.next_token_id.write(2);
     }
 
-    #[generate_trait]
-    pub impl InitializerImpl of InitializerTrait {
-        fn _initialize(
-            ref self: ContractState,
-            name: ByteArray,
-            symbol: ByteArray,
-            base_uri: ByteArray,
-            recipient: ContractAddress,
-            token_ids: Span<u256>,
-            owner: ContractAddress
-        ) {
-            self.erc721.initializer(name, symbol, base_uri);
-            self.ownable.initializer(owner);
-            self.src5.register_interface(IERC4906_ID);
-
-            self._mint_assets(recipient, token_ids);
+    #[abi(embed_v0)]
+    impl ExternalImpl of super::IPresetExternal<ContractState> {
+        fn mint_token(ref self: ContractState, recipient: ContractAddress) -> u256 {
+            self.ownable.assert_only_owner();
+            let token_id = self.next_token_id.read();
+            self.erc721.mint(recipient, token_id);
+            self.next_token_id.write(token_id + 1);
+            token_id
         }
-    }
 
-    #[generate_trait]
-    pub impl IntImpl of IntTrait {
-        /// Mints `token_ids` to `recipient`.
-        fn _mint_assets(
-            ref self: ContractState, recipient: ContractAddress, mut token_ids: Span<u256>
-        ) {
-            let length = token_ids.len();
+        fn set_base_uri(ref self: ContractState, base_uri: ByteArray) {
+            self.ownable.assert_only_owner();
+            self.erc721._set_base_uri(base_uri);
+            self.erc4906._emit_batch_metadata_update(0, core::num::traits::Bounded::MAX);
+        }
 
-            let mut i = 0;
-            loop {
-                if i >= length {
-                    break;
-                }
-
-                self.erc721._mint(recipient, *token_ids.at(i));
-                i += 1;
-            };
+        fn set_token_uri(ref self: ContractState, uri: ByteArray, token_id: u256) {
+            self.ownable.assert_only_owner();
+            self.erc4906._emit_metadata_update(token_id);
         }
     }
 }
+
