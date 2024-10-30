@@ -37,7 +37,7 @@ fn test_metadata_update() {
     start_cheat_caller_address(contract_address, OWNER());
     let token_id = nft.mint_token(OTHER());
     nft.set_token_uri("https://api.example.com/v2/1", token_id);
-    
+
     let expected_metadata_update = ERC4906Component::Event::MetadataUpdate(
         ERC4906Component::MetadataUpdate { token_id }
     );
