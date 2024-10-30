@@ -2,7 +2,7 @@
 
 use openzeppelin::utils::serde::SerializedAppend;
 use snforge_std as snf;
-use snforge_std::{ContractClassTrait};
+use snforge_std::ContractClassTrait;
 
 // Starknet deps
 
@@ -29,20 +29,15 @@ pub fn OWNER() -> ContractAddress {
     contract_address_const::<'OWNER()'>()
 }
 
-pub const TOKEN_1: u256 = 1;
-const TOKEN_10: u256 = 10;
 
 // Deploys an ERC4906 Preset contract.
 pub fn deploy() -> ContractAddress {
     let contract = snf::declare("ERC4906Preset").expect('Declaration failed');
 
-    let token_ids = array![TOKEN_1, TOKEN_10];
     let mut calldata: Array<felt252> = array![];
     calldata.append_serde(NAME());
     calldata.append_serde(SYMBOL());
     calldata.append_serde(BASE_URI());
-    calldata.append_serde(OTHER());
-    calldata.append_serde(token_ids);
     calldata.append_serde(OWNER());
 
     let (contract_address, _) = contract.deploy(@calldata).expect('Deployment failed');
