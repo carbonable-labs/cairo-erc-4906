@@ -1,8 +1,8 @@
 // External deps
 
-use openzeppelin::utils::serde::SerializedAppend;
+use openzeppelin_utils::serde::SerializedAppend;
 use snforge_std as snf;
-use snforge_std::ContractClassTrait;
+use snforge_std::{ContractClassTrait, DeclareResultTrait};
 
 // Starknet deps
 
@@ -32,7 +32,7 @@ pub fn OWNER() -> ContractAddress {
 
 // Deploys an ERC4906 Preset contract.
 pub fn deploy() -> ContractAddress {
-    let contract = snf::declare("ERC4906Preset").expect('Declaration failed');
+    let contract = snf::declare("ERC4906Preset").expect('Declaration failed').contract_class();
 
     let mut calldata: Array<felt252> = array![];
     calldata.append_serde(NAME());
