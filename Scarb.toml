@@ -1,6 +1,6 @@
 [package]
 name = "erc4906"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024_07"
 cairo-version = "2.8.4"
 authors = ["Tekkac <tekkac@proton.me>"]
@@ -8,11 +8,13 @@ authors = ["Tekkac <tekkac@proton.me>"]
 [lib]
 
 [dependencies]
-starknet = ">=2.8.0"
-openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.18.0" }
+starknet = ">=2.8.4"
+openzeppelin_access = "0.19.0"
+openzeppelin_introspection = "0.19.0"
+openzeppelin_token = "0.19.0"
 
 [dev-dependencies]
-snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.26.0" }
+snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.33.0" }
 
 [[target.starknet-contract]]
 sierra = true
