@@ -14,7 +14,6 @@ pub mod ERC4906Preset {
     use starknet::ContractAddress;
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
 
-    //use openzeppelin_access::ownable::ownable::OwnableComponent::InternalTrait;
     use openzeppelin_access::ownable::OwnableComponent;
     use openzeppelin_introspection::src5::SRC5Component;
     use openzeppelin_token::erc721::{ERC721Component, ERC721HooksEmptyImpl};
