@@ -4,6 +4,12 @@ version = "0.3.0"
 edition = "2024_07"
 cairo-version = "2.8.4"
 authors = ["Tekkac <tekkac@proton.me>"]
+description = "ERC4906 implementation for StarkNet"
+license = "Apache-2.0"
+repository = "https://github.com/carbonable-labs/cairo-erc-4906"
+keywords = ["starknet", "erc4906", "nft", "metadata"]
+readme = "README.md"
+documentation = "https://github.com/carbonable-labs/cairo-erc-4906"
 
 [lib]
 
